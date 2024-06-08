@@ -116,8 +116,8 @@ class InstallCommand extends Command
 
             $pluginsToAdd = multiselect(
                 label: 'These plugins will be installed:',
-                options: ['TrainingPlugin'],
-                default: ['TrainingPlugin'],
+                options: ['TrainingPlugin', 'TrainingInvitationPlugin', 'TrainingDatePlugin', 'TrainingTypePlugin'],
+                default: ['TrainingPlugin', 'TrainingInvitationPlugin', 'TrainingDatePlugin', 'TrainingTypePlugin'],
             );
 
             $function = '::make(),';
