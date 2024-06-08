@@ -1,13 +1,13 @@
 <?php
 
-namespace Moox\Builder\Resources\BuilderResource\Widgets;
+namespace Moox\Training\Resources\TrainingResource\Widgets;
 
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
-use Moox\Builder\Models\Item;
+use Moox\Training\Models\Training;
 
-class BuilderWidgets extends BaseWidget
+class TrainingWidgets extends BaseWidget
 {
     protected function getCards(): array
     {
@@ -17,14 +17,14 @@ class BuilderWidgets extends BaseWidget
             DB::raw('COUNT(*) as count'),
         ];
 
-        $aggregatedInfo = Item::query()
+        $aggregatedInfo = Training::query()
             ->select($aggregationColumns)
             ->first();
 
         return [
-            Stat::make(__('builder::translations.totalone'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('builder::translations.totaltwo'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('builder::translations.totalthree'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('trainings::translations.totalone'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('trainings::translations.totaltwo'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('trainings::translations.totalthree'), $aggregatedInfo->count ?? 0),
         ];
     }
 }

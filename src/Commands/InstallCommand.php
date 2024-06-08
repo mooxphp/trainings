@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Builder\Commands;
+namespace Moox\Training\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -20,14 +20,14 @@ class InstallCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'mooxbuilder:install';
+    protected $signature = 'mooxtrainings:install';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Installs Moox Builder, publishes configuration, migrations and registers plugins.';
+    protected $description = 'Installs Moox Training, publishes configuration, migrations and registers plugins.';
 
     /**
      * Execute the console command.
@@ -66,39 +66,39 @@ class InstallCommand extends Command
 
     public function welcome(): void
     {
-        info('Welcome to Moox Builder Installer');
+        info('Welcome to Moox Training Installer');
     }
 
     public function publishConfiguration(): void
     {
         if (confirm('Do you wish to publish the configuration?', true)) {
-            if (! File::exists('config/builder.php')) {
-                info('Publishing Builder Configuration...');
-                $this->callSilent('vendor:publish', ['--tag' => 'builder-config']);
+            if (! File::exists('config/trainings.php')) {
+                info('Publishing Training Configuration...');
+                $this->callSilent('vendor:publish', ['--tag' => 'trainings-config']);
 
                 return;
             }
-            warning('The Builder config already exist. The config will not be published.');
+            warning('The Training config already exist. The config will not be published.');
         }
     }
 
     public function publishMigrations(): void
     {
         if (confirm('Do you wish to publish the migrations?', true)) {
-            if (Schema::hasTable('items')) {
-                warning('The items table already exists. The migrations will not be published.');
+            if (Schema::hasTable('trainings')) {
+                warning('The trainings table already exists. The migrations will not be published.');
 
                 return;
             }
-            info('Publishing Items Migrations...');
-            $this->callSilent('vendor:publish', ['--tag' => 'builder-migrations']);
+            info('Publishing Trainings Migrations...');
+            $this->callSilent('vendor:publish', ['--tag' => 'trainings-migrations']);
         }
     }
 
     public function runMigrations(): void
     {
         if (confirm('Do you wish to run the migrations?', true)) {
-            info('Running Builder Migrations...');
+            info('Running Training Migrations...');
             $this->callSilent('migrate');
         }
     }
@@ -112,12 +112,12 @@ class InstallCommand extends Command
 
             $intend = '                ';
 
-            $namespace = "\Moox\Builder";
+            $namespace = "\Moox\Training";
 
             $pluginsToAdd = multiselect(
                 label: 'These plugins will be installed:',
-                options: ['BuilderPlugin'],
-                default: ['BuilderPlugin'],
+                options: ['TrainingPlugin'],
+                default: ['TrainingPlugin'],
             );
 
             $function = '::make(),';
@@ -158,6 +158,6 @@ class InstallCommand extends Command
 
     public function finish(): void
     {
-        note('Moox Builder installed successfully. Enjoy!');
+        note('Moox Training installed successfully. Enjoy!');
     }
 }
