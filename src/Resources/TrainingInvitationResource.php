@@ -2,7 +2,6 @@
 
 namespace Moox\Training\Resources;
 
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
@@ -76,16 +75,6 @@ class TrainingInvitationResource extends Resource
                             'md' => 12,
                             'lg' => 12,
                         ]),
-
-                    DateTimePicker::make('sent_at')
-                        ->rules(['date'])
-                        ->nullable()
-                        ->placeholder('Sent At')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
                 ]),
             ]),
         ]);
@@ -111,9 +100,6 @@ class TrainingInvitationResource extends Resource
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('sent_at')
-                    ->toggleable()
-                    ->dateTime(),
             ])
             ->filters([
                 DateRangeFilter::make('created_at'),
@@ -131,7 +117,7 @@ class TrainingInvitationResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //TrainingInvitationResource\RelationManagers\TrainingDatesRelationManager::class,
+            TrainingInvitationResource\RelationManagers\TrainingDatesRelationManager::class,
         ];
     }
 

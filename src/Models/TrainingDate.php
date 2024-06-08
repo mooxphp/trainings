@@ -19,6 +19,7 @@ class TrainingDate extends Model
         'location',
         'min_participants',
         'max_participants',
+        'sent_at',
     ];
 
     protected $searchableFields = ['*'];

@@ -15,7 +15,6 @@ class TrainingInvitation extends Model
         'title',
         'slug',
         'content',
-        'sent_at',
     ];
 
     protected $searchableFields = ['*'];

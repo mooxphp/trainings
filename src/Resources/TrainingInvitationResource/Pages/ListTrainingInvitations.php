@@ -2,8 +2,9 @@
 
 namespace Moox\Training\Resources\TrainingInvitationResource\Pages;
 
-use Filament\Actions\CreateAction;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
+use Moox\Training\Jobs\SendInvitationRequests;
 use Moox\Training\Resources\TrainingInvitationResource;
 use Moox\Training\Traits\HasDescendingOrder;
 
@@ -15,6 +16,14 @@ class ListTrainingInvitations extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [CreateAction::make()];
+        return [
+            Action::make('requestInvitations')
+                ->label('Request Invitations')
+                ->action(function () {
+                    SendInvitationRequests::dispatch();
+                })
+                ->requiresConfirmation()
+                ->color('primary'),
+        ];
     }
 }

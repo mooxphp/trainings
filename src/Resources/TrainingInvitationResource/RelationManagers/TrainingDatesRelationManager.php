@@ -2,20 +2,21 @@
 
 namespace Moox\Training\Resources\TrainingInvitationResource\RelationManagers;
 
-use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Resources\Table;
-use Filament\Tables;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
 class TrainingDatesRelationManager extends RelationManager
@@ -24,7 +25,7 @@ class TrainingDatesRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'link';
 
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form->schema([
             Grid::make(['default' => 0])->schema([
@@ -50,11 +51,11 @@ class TrainingDatesRelationManager extends RelationManager
                     ->rules(['in:onsite,teams,webex,slack,zoom'])
                     ->searchable()
                     ->options([
-                        'Onsite' => 'Onsite',
-                        'Teams' => 'Teams',
-                        'Webex' => 'Webex',
-                        'Slack' => 'Slack',
-                        'Zoom' => 'Zoom',
+                        'onsite' => 'Onsite',
+                        'teams' => 'Teams',
+                        'webex' => 'Webex',
+                        'slack' => 'Slack',
+                        'zoom' => 'Zoom',
                     ])
                     ->placeholder('Type')
                     ->columnSpan([
@@ -100,36 +101,41 @@ class TrainingDatesRelationManager extends RelationManager
                         'md' => 12,
                         'lg' => 12,
                     ]),
+
+                DateTimePicker::make('sent_at')
+                    ->rules(['date'])
+                    ->nullable()
+                    ->placeholder('Sent At')
+                    ->columnSpan([
+                        'default' => 12,
+                        'md' => 12,
+                        'lg' => 12,
+                    ]),
             ]),
         ]);
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make(
+                TextColumn::make(
                     'trainingInvitation.title'
                 )->limit(50),
-                Tables\Columns\TextColumn::make('begin')->dateTime(),
-                Tables\Columns\TextColumn::make('end')->dateTime(),
-                Tables\Columns\TextColumn::make('type')->enum([
-                    'Onsite' => 'Onsite',
-                    'Teams' => 'Teams',
-                    'Webex' => 'Webex',
-                    'Slack' => 'Slack',
-                    'Zoom' => 'Zoom',
-                ]),
-                Tables\Columns\TextColumn::make('link')->limit(50),
-                Tables\Columns\TextColumn::make('location')->limit(50),
-                Tables\Columns\TextColumn::make('min_participants'),
-                Tables\Columns\TextColumn::make('max_participants'),
+                TextColumn::make('begin')->dateTime(),
+                TextColumn::make('end')->dateTime(),
+                TextColumn::make('type'),
+                TextColumn::make('link')->limit(50),
+                TextColumn::make('location')->limit(50),
+                TextColumn::make('min_participants'),
+                TextColumn::make('max_participants'),
+                TextColumn::make('sent_at')->dateTime(),
             ])
             ->filters([
-                Tables\Filters\Filter::make('created_at')
+                Filter::make('created_at')
                     ->form([
-                        Forms\Components\DatePicker::make('created_from'),
-                        Forms\Components\DatePicker::make('created_until'),
+                        DatePicker::make('created_from'),
+                        DatePicker::make('created_until'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -161,7 +167,9 @@ class TrainingDatesRelationManager extends RelationManager
                     ->multiple()
                     ->relationship('trainingInvitation', 'title'),
             ])
-            ->headerActions([CreateAction::make()])
+            ->headerActions([
+                CreateAction::make(),
+            ])
             ->actions([EditAction::make(), DeleteAction::make()])
             ->bulkActions([DeleteBulkAction::make()]);
     }

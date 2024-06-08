@@ -71,11 +71,11 @@ class TrainingDateResource extends Resource
                         ->required()
                         ->searchable()
                         ->options([
-                            'Onsite' => 'Onsite',
-                            'Teams' => 'Teams',
-                            'Webex' => 'Webex',
-                            'Slack' => 'Slack',
-                            'Zoom' => 'Zoom',
+                            'onsite' => 'Onsite',
+                            'teams' => 'Teams',
+                            'webex' => 'Webex',
+                            'slack' => 'Slack',
+                            'zoom' => 'Zoom',
                         ])
                         ->placeholder('Type')
                         ->columnSpan([
@@ -125,6 +125,15 @@ class TrainingDateResource extends Resource
                             'md' => 12,
                             'lg' => 12,
                         ]),
+                    DateTimePicker::make('sent_at')
+                        ->rules(['date'])
+                        ->nullable()
+                        ->placeholder('Sent At')
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
                 ]),
             ]),
         ]);
@@ -161,6 +170,9 @@ class TrainingDateResource extends Resource
                 Tables\Columns\TextColumn::make('max_participants')
                     ->toggleable()
                     ->searchable(true, null, true),
+                Tables\Columns\TextColumn::make('sent_at')
+                    ->toggleable()
+                    ->dateTime(),
             ])
             ->filters([
                 DateRangeFilter::make('created_at'),

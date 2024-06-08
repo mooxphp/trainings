@@ -134,7 +134,6 @@ class TrainingResource extends Resource
                         ->rules(['exists:training_types,id'])
                         ->required()
                         ->relationship('trainingType', 'title')
-                        ->searchable()
                         ->placeholder('Training Type')
                         ->columnSpan([
                             'default' => 12,
@@ -228,7 +227,7 @@ class TrainingResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //TrainingResource\RelationManagers\TrainingInvitationsRelationManager::class,
+            TrainingResource\RelationManagers\TrainingInvitationsRelationManager::class,
         ];
     }
 

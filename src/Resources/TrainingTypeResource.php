@@ -92,7 +92,7 @@ class TrainingTypeResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //TrainingTypeResource\RelationManagers\TrainingsRelationManager::class,
+            TrainingTypeResource\RelationManagers\TrainingsRelationManager::class,
         ];
     }
 
