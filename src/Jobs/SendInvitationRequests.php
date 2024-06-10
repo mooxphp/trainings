@@ -27,8 +27,6 @@ class SendInvitationRequests implements ShouldQueue
 
     public $backoff;
 
-    public $invitationId;
-
     public function __construct()
     {
         $this->tries = 3;
@@ -49,9 +47,12 @@ class SendInvitationRequests implements ShouldQueue
                     'title' => $training->title,
                     'slug' => Str::slug($training->title),
                     'content' => $training->description,
+                    'status' => 'new',
                     // 'user_id' => $training->users->first()->id,
                 ]);
             });
+
+        $this->setProgress(10);
 
         foreach ($invitationRequests as $invitationRequest) {
 
@@ -91,11 +92,13 @@ class SendInvitationRequests implements ShouldQueue
             $training->due_at = $dueAt;
             $training->save();
 
+            $this->setProgress(30);
+
             // $userEmail = $this->getUserEmailById($invitationRequest->user_id);
 
             $userEmail = 'alf@drollinger.info';
 
-            Mail::to($userEmail)->send(new InvitationRequest($invitationRequest->id));
+            Mail::to($userEmail)->send(new InvitationRequest($invitationRequest));
         }
 
         $this->setProgress(100);

@@ -8,30 +8,30 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class InvitationRequest extends Mailable
+class Invitation extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $invitationRequest;
+    public $trainingDates;
 
-    public function __construct($invitationRequest)
+    public function __construct($trainingDates)
     {
-        $this->invitationRequest = $invitationRequest;
+        $this->trainingDates = $trainingDates;
     }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Invitation Request',
+            subject: 'Invitation',
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            view: 'trainings::emails.invitation-request',
+            view: 'trainings::emails.invitation',
             with: [
-                'invitationId' => $this->invitationRequest,
+                'trainingDates' => $this->trainingDates,
             ],
         );
     }

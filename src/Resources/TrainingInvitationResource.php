@@ -90,13 +90,17 @@ class TrainingInvitationResource extends Resource
                     ->limit(50),
                 Tables\Columns\TextColumn::make('title')
                     ->toggleable()
-                    ->searchable(true, null, true)
+                    ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('slug')
                     ->toggleable()
-                    ->searchable(true, null, true)
+                    ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('content')
+                    ->toggleable()
+                    ->searchable()
+                    ->limit(50),
+                Tables\Columns\TextColumn::make('status')
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
@@ -128,6 +132,7 @@ class TrainingInvitationResource extends Resource
             'create' => Pages\CreateTrainingInvitation::route('/create'),
             'view' => Pages\ViewTrainingInvitation::route('/{record}'),
             'edit' => Pages\EditTrainingInvitation::route('/{record}/edit'),
+            'prepare' => Pages\PrepareTrainingInvitation::route('/{record}/prepare'),
         ];
     }
 }

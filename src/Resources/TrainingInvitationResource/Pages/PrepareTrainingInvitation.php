@@ -4,11 +4,11 @@ namespace Moox\Training\Resources\TrainingInvitationResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
+use Filament\Forms\Form;
 use Filament\Resources\Pages\EditRecord;
-use Moox\Training\Jobs\SendInvitations;
 use Moox\Training\Resources\TrainingInvitationResource;
 
-class EditTrainingInvitation extends EditRecord
+class PrepareTrainingInvitation extends EditRecord
 {
     protected static string $resource = TrainingInvitationResource::class;
 
@@ -18,11 +18,14 @@ class EditTrainingInvitation extends EditRecord
             Action::make('sendInvitations')
                 ->label('Send Invitations')
                 ->action(function () {
-                    SendInvitations::dispatch($this->record->getKey());
-                })
-                ->requiresConfirmation()
-                ->color('primary'),
+                    // Send invitation job
+                }),
             DeleteAction::make(),
         ];
+    }
+
+    public function form(Form $form): Form
+    {
+        return parent::form($form);
     }
 }

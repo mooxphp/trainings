@@ -7,12 +7,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 use Moox\Jobs\Traits\JobProgress;
-use Moox\Press\Models\WpUser;
-use Moox\Training\Mail\InvitationRequest;
-use Moox\Training\Models\Training;
+use Moox\Training\Mail\Invitation;
 use Moox\Training\Models\TrainingInvitation;
 
 class SendInvitations implements ShouldQueue
@@ -29,85 +27,38 @@ class SendInvitations implements ShouldQueue
 
     public $invitationId;
 
-    public function __construct()
+    public function __construct($invitationId)
     {
         $this->tries = 3;
         $this->timeout = 300;
         $this->maxExceptions = 1;
         $this->backoff = 350;
+        $this->invitationId = $invitationId;
     }
 
     public function handle()
     {
         $this->setProgress(1);
 
-        $invitationRequests = Training::where('due_at', '<', now())
+        $trainingDates = [];
+
+        //
+        $invitation = TrainingInvitation::find($this->invitationId);
+
+        $invitation->trainingDates()
+            ->whereNull('sent_at')
             ->get()
-            ->map(function ($training) {
-                return TrainingInvitation::create([
-                    'training_id' => $training->id,
-                    'title' => $training->title,
-                    'slug' => Str::slug($training->title),
-                    'content' => $training->description,
-                    // 'user_id' => $training->users->first()->id,
-                ]);
+            ->each(function ($trainingDate) {
+                $trainingDates[] = $trainingDate;
+                $trainingDate->update(['sent_at' => now()]);
             });
 
-        foreach ($invitationRequests as $invitationRequest) {
+        $email = 'alf@drollinger.info';
 
-            $training = Training::find($invitationRequest->training_id);
+        Log::info('Sending invitation to '.$email.' for '.count($trainingDates).' training dates');
 
-            $cycle = $training->cycle;
-
-            $dueAt = $training->due_at;
-
-            switch ($cycle) {
-                case 'annually':
-                    $dueAt->addYear();
-                    break;
-                case 'half-yearly':
-                    $dueAt->addMonths(6);
-                    break;
-                case 'quarterly':
-                    $dueAt->addMonths(3);
-                    break;
-                case 'monthly':
-                    $dueAt->addMonth();
-                    break;
-                case 'every 2 years':
-                    $dueAt->addYears(2);
-                    break;
-                case 'every 3 years':
-                    $dueAt->addYears(3);
-                    break;
-                case 'every 4 years':
-                    $dueAt->addYears(4);
-                    break;
-                case 'every 5 years':
-                    $dueAt->addYears(5);
-                    break;
-            }
-
-            $training->due_at = $dueAt;
-            $training->save();
-
-            // $userEmail = $this->getUserEmailById($invitationRequest->user_id);
-
-            $userEmail = 'alf@drollinger.info';
-
-            Mail::to($userEmail)->send(new InvitationRequest($invitationRequest->id));
-        }
+        Mail::to($email)->send(new Invitation($trainingDates));
 
         $this->setProgress(100);
-    }
-
-    protected function getUserEmailById($userId)
-    {
-        $user = WpUser::find($userId);
-        if ($user) {
-            return $user->user_email;
-        }
-
-        return null;
     }
 }
