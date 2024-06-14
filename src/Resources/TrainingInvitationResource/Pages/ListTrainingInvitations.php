@@ -16,9 +16,13 @@ class ListTrainingInvitations extends ListRecords
 
     protected function getHeaderActions(): array
     {
+        if (config('trainings.collect_invitation_action') === false) {
+            return [];
+        }
+
         return [
-            Action::make('requestInvitations')
-                ->label('Request Invitations')
+            Action::make('collectInvitations')
+                ->label('Collect Invitations')
                 ->action(function () {
                     SendInvitationRequests::dispatch();
                 })

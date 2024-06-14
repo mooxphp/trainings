@@ -9,13 +9,14 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\QueryException;
 use Moox\Training\Filters\DateRangeFilter;
 use Moox\Training\Models\Training;
 use Moox\Training\Resources\TrainingResource\Pages;
@@ -221,7 +222,31 @@ class TrainingResource extends Resource
                     ->label('TrainingType'),
             ])
             ->actions([ViewAction::make(), EditAction::make()])
-            ->bulkActions([DeleteBulkAction::make()]);
+            ->bulkActions([
+                Tables\Actions\DeleteBulkAction::make()
+                    ->action(function ($records, Tables\Actions\DeleteBulkAction $action) {
+                        foreach ($records as $record) {
+                            try {
+                                $record->delete();
+                                Notification::make()
+                                    ->title('Trainings Deleted')
+                                    ->body('The trainings were deleted successfully.')
+                                    ->success()
+                                    ->send();
+                            } catch (QueryException $exception) {
+                                if ($exception->getCode() === '23000') {
+                                    Notification::make()
+                                        ->title('Cannot Delete Trainings')
+                                        ->body('One or more trainings have associated training invitations and cannot be deleted.')
+                                        ->danger()
+                                        ->send();
+                                } else {
+                                    throw $exception;
+                                }
+                            }
+                        }
+                    }),
+            ]);
     }
 
     public static function getRelations(): array

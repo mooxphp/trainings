@@ -15,6 +15,10 @@ class ListTrainings extends ListRecords
 
     protected function getHeaderActions(): array
     {
+        if (config('trainings.create_trainings_action') === false) {
+            return [];
+        }
+
         return [CreateAction::make()];
     }
 }
