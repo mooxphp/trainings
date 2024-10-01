@@ -56,6 +56,7 @@ class SendInvitationRequests implements ShouldQueue
         $this->setProgress(10);
 
         foreach ($invitationRequests as $invitationRequest) {
+
             $training = Training::find($invitationRequest->training_id);
 
             $cycle = $training->cycle;
